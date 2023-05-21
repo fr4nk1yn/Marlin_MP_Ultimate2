@@ -337,7 +337,7 @@
    * Thermal Protection Variance Monitor - EXPERIMENTAL.
    * Kill the machine on a stuck temperature sensor. Disable if you get false positives.
    */
-  //#define THERMAL_PROTECTION_VARIANCE_MONITOR   // Detect a sensor malfunction preventing temperature updates
+  #define THERMAL_PROTECTION_VARIANCE_MONITOR   // Detect a sensor malfunction preventing temperature updates
 #endif
 
 #if ENABLED(PIDTEMP)
@@ -413,7 +413,7 @@
  * Enable Autotemp Mode with M104/M109 F<factor> S<mintemp> B<maxtemp>.
  * Disable by sending M104/M109 with no F parameter (or F0 with AUTOTEMP_PROPORTIONAL).
  */
-#define AUTOTEMP
+//#define AUTOTEMP
 #if ENABLED(AUTOTEMP)
   #define AUTOTEMP_OLDWEIGHT    0.98  // Factor used to weight previous readings (0.0 < value < 1.0)
   // Turn on AUTOTEMP on M104/M109 by default using proportions set here
@@ -473,7 +473,7 @@
  * Hotend Idle Timeout
  * Prevent filament in the nozzle from charring and causing a critical jam.
  */
-//#define HOTEND_IDLE_TIMEOUT
+#define HOTEND_IDLE_TIMEOUT
 #if ENABLED(HOTEND_IDLE_TIMEOUT)
   #define HOTEND_IDLE_TIMEOUT_SEC (5*60)    // (seconds) Time without extruder movement to trigger protection
   #define HOTEND_IDLE_MIN_TRIGGER   180     // (°C) Minimum temperature to enable hotend protection
@@ -763,7 +763,8 @@
  *
  *   - Extra endstops are included in the output of 'M119'.
  *
- *   - Set X_DUAL_ENDSTOP_ADJUSTMENT to the known error in the X2 endstop.
+ *   - Set X_DUAL_ENDSTOP_AD
+ * STMENT to the known error in the X2 endstop.
  *     Applied to the X2 motor on 'G28' / 'G28 X'.
  *     Get the offset by homing X and measuring the error.
  *     Also set with 'M666 X<offset>' and stored to EEPROM with 'M500'.
@@ -840,7 +841,7 @@
 
 //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm) Backoff from endstops after homing
 
-//#define QUICK_HOME                          // If G28 contains XY do a diagonal move first
+#define QUICK_HOME                          // If G28 contains XY do a diagonal move first
 //#define HOME_Y_BEFORE_X                     // If G28 contains XY home Y before X
 //#define HOME_Z_FIRST                        // Home Z first. Requires a Z-MIN endstop (not a probe).
 //#define CODEPENDENT_XY_HOMING               // If X/Y can't home without homing Y/X first
@@ -988,7 +989,7 @@
 #if ENABLED(ASSISTED_TRAMMING)
 
   // Define positions for probe points.
-  #define TRAMMING_POINT_XY { {  20, 20 }, { 180,  20 }, { 180, 180 }, { 20, 180 } }
+#define TRAMMING_POINT_XY { {  20, 20 }, { 180,  20 }, { 180, 180 }, { 20, 180 } }
 
   // Define position names for probe points.
   #define TRAMMING_POINT_NAME_1 "Front-Left"
@@ -999,7 +1000,7 @@
   #define RESTORE_LEVELING_AFTER_G35    // Enable to restore leveling setup after operation
   //#define REPORT_TRAMMING_MM          // Report Z deviation (mm) for each point relative to the first
 
-  //#define ASSISTED_TRAMMING_WIZARD    // Add a Tramming Wizard to the LCD menu
+  #define ASSISTED_TRAMMING_WIZARD    // Add a Tramming Wizard to the LCD menu
 
   //#define ASSISTED_TRAMMING_WAIT_POSITION { X_CENTER, Y_CENTER, 30 } // Move the nozzle out of the way for adjustment
 
@@ -1024,9 +1025,9 @@
 #define INVERT_X_STEP_PIN false
 #define INVERT_Y_STEP_PIN false
 #define INVERT_Z_STEP_PIN false
-#define INVERT_I_STEP_PIN false
-#define INVERT_J_STEP_PIN false
-#define INVERT_K_STEP_PIN false
+//#define INVERT_I_STEP_PIN false
+//#define INVERT_J_STEP_PIN false
+//#define INVERT_K_STEP_PIN false
 #define INVERT_E_STEP_PIN false
 
 /**
@@ -1038,9 +1039,9 @@
 #define DISABLE_INACTIVE_X true
 #define DISABLE_INACTIVE_Y true
 #define DISABLE_INACTIVE_Z true  // Set 'false' if the nozzle could fall onto your printed part!
-#define DISABLE_INACTIVE_I true
-#define DISABLE_INACTIVE_J true
-#define DISABLE_INACTIVE_K true
+//#define DISABLE_INACTIVE_I true
+//#define DISABLE_INACTIVE_J true
+//#define DISABLE_INACTIVE_K true
 #define DISABLE_INACTIVE_E true
 
 // Default Minimum Feedrates for printing and travel moves
@@ -1178,7 +1179,7 @@
  * vibration and surface artifacts. The algorithm adapts to provide the best possible step smoothing at the
  * lowest stepping frequencies.
  */
-//#define ADAPTIVE_STEP_SMOOTHING
+#define ADAPTIVE_STEP_SMOOTHING
 
 /**
  * Custom Microstepping
@@ -1264,8 +1265,8 @@
 // Change values more rapidly when the encoder is rotated faster
 #define ENCODER_RATE_MULTIPLIER
 #if ENABLED(ENCODER_RATE_MULTIPLIER)
-  #define ENCODER_10X_STEPS_PER_SEC   30  // (steps/s) Encoder rate for 10x speed
-  #define ENCODER_100X_STEPS_PER_SEC  80  // (steps/s) Encoder rate for 100x speed
+  #define ENCODER_10X_STEPS_PER_SEC   75  // (steps/s) Encoder rate for 10x speed
+  #define ENCODER_100X_STEPS_PER_SEC  160  // (steps/s) Encoder rate for 100x speed
 #endif
 
 // Play a beep when the feedrate is changed from the Status Screen
@@ -1281,7 +1282,7 @@
 //#define LCD_BACKLIGHT_TIMEOUT 30 // (s) Timeout before turning off the backlight
 
 #if HAS_BED_PROBE && EITHER(HAS_MARLINUI_MENU, HAS_TFT_LVGL_UI)
-  #define PROBE_OFFSET_WIZARD       // Add a Probe Z Offset calibration option to the LCD menu
+  //#define PROBE_OFFSET_WIZARD       // Add a Probe Z Offset calibration option to the LCD menu
   #if ENABLED(PROBE_OFFSET_WIZARD)
     /**
      * Enable to init the Probe Z-Offset when starting the Wizard.
@@ -1337,23 +1338,23 @@
   //#define LCD_TIMEOUT_TO_STATUS 15000   // (ms)
 
   #if ENABLED(SHOW_BOOTSCREEN)
-    #define BOOTSCREEN_TIMEOUT 4000       // (ms) Total Duration to display the boot screen(s)
+    #define BOOTSCREEN_TIMEOUT 3000       // (ms) Total Duration to display the boot screen(s)
     #if EITHER(HAS_MARLINUI_U8GLIB, TFT_COLOR_UI)
       #define BOOT_MARLIN_LOGO_SMALL      // Show a smaller Marlin logo on the Boot Screen (saving lots of flash)
     #endif
   #endif
 
   // Scroll a longer status message into view
-  //#define STATUS_MESSAGE_SCROLLING
+  #define STATUS_MESSAGE_SCROLLING
 
   // Apply a timeout to low-priority status messages
-  //#define STATUS_MESSAGE_TIMEOUT_SEC 30 // (seconds)
+  #define STATUS_MESSAGE_TIMEOUT_SEC 30 // (seconds)
 
   // On the Info Screen, display XY with one decimal place when possible
   //#define LCD_DECIMAL_SMALL_XY
 
   // Add an 'M73' G-code to set the current percentage
-  //#define LCD_SET_PROGRESS_MANUALLY
+  #define LCD_SET_PROGRESS_MANUALLY
 
   // Show the E position (filament used) during printing
   //#define LCD_SHOW_E_TOTAL
@@ -1389,9 +1390,9 @@
 // LCD Print Progress options
 #if EITHER(SDSUPPORT, LCD_SET_PROGRESS_MANUALLY)
   #if CAN_SHOW_REMAINING_TIME
-    //#define SHOW_REMAINING_TIME         // Display estimated time to completion
+    #define SHOW_REMAINING_TIME         // Display estimated time to completion
     #if ENABLED(SHOW_REMAINING_TIME)
-      //#define USE_M73_REMAINING_TIME    // Use remaining time from M73 command instead of estimation
+      #define USE_M73_REMAINING_TIME    // Use remaining time from M73 command instead of estimation
       //#define ROTATE_PROGRESS_DISPLAY   // Display (P)rogress, (E)lapsed, and (R)emaining time
     #endif
   #endif
@@ -1436,7 +1437,7 @@
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
   #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
-  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
+  #define SD_FINISHED_RELEASECOMMAND "M84XYZE"  // Use "M84XYE" to keep Z enabled so your bed stays in place
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
   // Since the FAT gets out of order with usage, SDCARD_SORT_ALPHA is recommended.
@@ -1444,10 +1445,10 @@
 
   #define SD_MENU_CONFIRM_START             // Confirm the selected SD file before printing
 
-  //#define NO_SD_AUTOSTART                 // Remove auto#.g file support completely to save some Flash, SRAM
+  #define NO_SD_AUTOSTART                 // Remove auto#.g file support completely to save some Flash, SRAM
   //#define MENU_ADDAUTOSTART               // Add a menu option to run auto#.g files
 
-  //#define BROWSE_MEDIA_ON_INSERT          // Open the file browser when media is inserted
+  #define BROWSE_MEDIA_ON_INSERT          // Open the file browser when media is inserted
 
   #define MEDIA_MENU_AT_TOP               // Force the media menu to be listed on the top of the main menu
 
@@ -1669,7 +1670,7 @@
 #if HAS_MARLINUI_U8GLIB
   // Save many cycles by drawing a hollow frame or no frame on the Info Screen
   //#define XYZ_NO_FRAME
-  #define XYZ_HOLLOW_FRAME
+  //#define XYZ_HOLLOW_FRAME
 
   // A bigger font is available for edit items. Costs 3120 bytes of flash.
   // Western only. Not available for Cyrillic, Kana, Turkish, Greek, or Chinese.
@@ -1723,21 +1724,21 @@
   #define STATUS_HOTEND_INVERTED      // Show solid nozzle bitmaps when heating (Requires STATUS_HOTEND_ANIM for numbered hotends)
   #define STATUS_HOTEND_ANIM          // Use a second bitmap to indicate hotend heating
   #define STATUS_BED_ANIM             // Use a second bitmap to indicate bed heating
-  #define STATUS_CHAMBER_ANIM         // Use a second bitmap to indicate chamber heating
+  //#define STATUS_CHAMBER_ANIM         // Use a second bitmap to indicate chamber heating
   //#define STATUS_CUTTER_ANIM        // Use a second bitmap to indicate spindle / laser active
   //#define STATUS_COOLER_ANIM        // Use a second bitmap to indicate laser cooling
   //#define STATUS_FLOWMETER_ANIM     // Use multiple bitmaps to indicate coolant flow
   //#define STATUS_ALT_BED_BITMAP     // Use the alternative bed bitmap
   //#define STATUS_ALT_FAN_BITMAP     // Use the alternative fan bitmap
-  //#define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
+  #define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
   //#define STATUS_HEAT_PERCENT       // Show heating in a progress bar
   //#define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~3260 (or ~940) bytes of flash.
 
   // Frivolous Game Options
   //#define MARLIN_BRICKOUT
-  //#define MARLIN_INVADERS
+  #define MARLIN_INVADERS
   //#define MARLIN_SNAKE
-  //#define GAMES_EASTER_EGG          // Add extra blank lines above the "Games" sub-menu
+  #define GAMES_EASTER_EGG          // Add extra blank lines above the "Games" sub-menu
 
 #endif // HAS_MARLINUI_U8GLIB
 
@@ -1967,8 +1968,8 @@
   //#define BABYSTEP_XY                     // Also enable X/Y Babystepping. Not supported on DELTA!
   #define BABYSTEP_INVERT_Z false           // Change if Z babysteps should go the other way
   //#define BABYSTEP_MILLIMETER_UNITS       // Specify BABYSTEP_MULTIPLICATOR_(XY|Z) in mm instead of micro-steps
-  #define BABYSTEP_MULTIPLICATOR_Z  1       // (steps or mm) Steps or millimeter distance for each Z babystep
-  #define BABYSTEP_MULTIPLICATOR_XY 1       // (steps or mm) Steps or millimeter distance for each XY babystep
+  #define BABYSTEP_MULTIPLICATOR_Z  3       // (steps or mm) Steps or millimeter distance for each Z babystep
+  #define BABYSTEP_MULTIPLICATOR_XY 3       // (steps or mm) Steps or millimeter distance for each XY babystep
 
   //#define DOUBLECLICK_FOR_Z_BABYSTEPPING  // Double-click on the Status Screen for Z Babystepping.
   #if ENABLED(DOUBLECLICK_FOR_Z_BABYSTEPPING)
@@ -2009,9 +2010,9 @@
 #define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   //#define EXTRA_LIN_ADVANCE_K // Enable for second linear advance constants
-  #define LIN_ADVANCE_K 0.22    // Unit: mm compression per 1mm/s extruder speed
+  #define LIN_ADVANCE_K 0.04    // Unit: mm compression per 1mm/s extruder speed
   //#define LA_DEBUG            // If enabled, this will generate debug information output over USB.
-  //#define EXPERIMENTAL_SCURVE // Enable this option to permit S-Curve Acceleration
+  #define EXPERIMENTAL_SCURVE // Enable this option to permit S-Curve Acceleration
   #define ALLOW_LOW_EJERK     // Allow a DEFAULT_EJERK value of <10. Recommended for direct drive hotends.
 #endif
 
@@ -2072,7 +2073,7 @@
  * Repeatedly attempt G29 leveling until it succeeds.
  * Stop after G29_MAX_RETRIES attempts.
  */
-//#define G29_RETRY_AND_RECOVER
+#define G29_RETRY_AND_RECOVER
 #if ENABLED(G29_RETRY_AND_RECOVER)
   #define G29_MAX_RETRIES 3
   #define G29_HALT_ON_FAILURE
@@ -2080,8 +2081,8 @@
    * Specify the GCODE commands that will be executed when leveling succeeds,
    * between attempts, and after the maximum number of retries have been tried.
    */
-  #define G29_SUCCESS_COMMANDS "M117 Bed leveling done."
-  #define G29_RECOVER_COMMANDS "M117 Probe failed. Rewiping.\nG28\nG12 P0 S12 T0"
+  #define G29_SUCCESS_COMMANDS "M117 Bed leveling done.\nM500"
+  #define G29_RECOVER_COMMANDS "M117 Probe failed. Rewiping.\nG28"
   #define G29_FAILURE_COMMANDS "M117 Bed leveling failed.\nG0 Z10\nM300 P25 S880\nM300 P50 S0\nM300 P25 S880\nM300 P50 S0\nM300 P25 S880\nM300 P50 S0\nG4 S1"
 
 #endif
@@ -2162,7 +2163,7 @@
 //
 // G2/G3 Arc Support
 //
-#define ARC_SUPPORT                   // Requires ~3226 bytes
+//#define ARC_SUPPORT                   // Requires ~3226 bytes
 #if ENABLED(ARC_SUPPORT)
   #define MIN_ARC_SEGMENT_MM      0.1 // (mm) Minimum length of each arc segment
   #define MAX_ARC_SEGMENT_MM      1.0 // (mm) Maximum length of each arc segment
@@ -2273,8 +2274,8 @@
 // @section serial
 
 // The ASCII buffer for serial input
-#define MAX_CMD_SIZE 96
-#define BUFSIZE 4
+#define MAX_CMD_SIZE 64
+#define BUFSIZE 8
 
 // Transmission to Host Buffer Size
 // To save 386 bytes of flash (and TX_BUFFER_SIZE+3 bytes of RAM) set to 0.
@@ -2515,7 +2516,7 @@
 #define ADVANCED_PAUSE_FEATURE
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   #define PAUSE_PARK_RETRACT_FEEDRATE         60  // (mm/s) Initial retract feedrate.
-  #define PAUSE_PARK_RETRACT_LENGTH            2  // (mm) Initial retract.
+  #define PAUSE_PARK_RETRACT_LENGTH            5  // (mm) Initial retract.
                                                   // This short retract is done immediately, before parking the nozzle.
   #define FILAMENT_CHANGE_UNLOAD_FEEDRATE     10  // (mm/s) Unload filament feedrate. This can be pretty fast.
   #define FILAMENT_CHANGE_UNLOAD_ACCEL        25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
@@ -2552,10 +2553,10 @@
   //#define FILAMENT_CHANGE_RESUME_ON_INSERT      // Automatically continue / load filament when runout sensor is triggered again.
   //#define PAUSE_REHEAT_FAST_RESUME              // Reduce number of waits by not prompting again post-timeout before continuing.
 
-  //#define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
+  #define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
   //#define HOME_BEFORE_FILAMENT_CHANGE           // If needed, home before parking for filament change
 
-  //#define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
+  #define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
   //#define FILAMENT_UNLOAD_ALL_EXTRUDERS         // Allow M702 to unload all extruders above a minimum target temp (as set by M302)
 #endif
 
@@ -3125,7 +3126,7 @@
    * Beta feature!
    * Create a 50/50 square wave step pulse optimal for stepper drivers.
    */
-  //#define SQUARE_WAVE_STEPPING
+  #define SQUARE_WAVE_STEPPING
 
   /**
    * Enable M122 debugging command for TMC stepper drivers.
@@ -3798,7 +3799,7 @@
  *  - M206 and M428 are disabled.
  *  - G92 will revert to its behavior from Marlin 1.0.
  */
-//#define NO_WORKSPACE_OFFSETS
+#define NO_WORKSPACE_OFFSETS
 
 // Extra options for the M114 "Current Position" report
 //#define M114_DETAIL         // Use 'M114` for details to check planner calculations
@@ -3820,7 +3821,7 @@
 //#define MEATPACK_ON_SERIAL_PORT_1
 //#define MEATPACK_ON_SERIAL_PORT_2
 
-//#define GCODE_CASE_INSENSITIVE  // Accept G-code sent to the firmware in lowercase
+#define GCODE_CASE_INSENSITIVE  // Accept G-code sent to the firmware in lowercase
 
 //#define REPETIER_GCODE_M360     // Add commands originally from Repetier FW
 

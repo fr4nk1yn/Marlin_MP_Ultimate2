@@ -87,7 +87,7 @@
 #define SHOW_BOOTSCREEN
 
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
-//#define SHOW_CUSTOM_BOOTSCREEN
+#define SHOW_CUSTOM_BOOTSCREEN
 #define BRAND_MP
 
 #ifdef BRAND_MP
@@ -474,13 +474,13 @@
 #define HEATER_5_MINTEMP   5
 #define HEATER_6_MINTEMP   5
 #define HEATER_7_MINTEMP   5
-#define BED_MINTEMP        5
+#define BED_MINTEMP        0
 #define CHAMBER_MINTEMP    5
 
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 265
+#define HEATER_0_MAXTEMP 275
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
@@ -488,7 +488,7 @@
 #define HEATER_5_MAXTEMP 275
 #define HEATER_6_MAXTEMP 275
 #define HEATER_7_MAXTEMP 275
-#define BED_MAXTEMP      150
+#define BED_MAXTEMP      120
 #define CHAMBER_MAXTEMP  60
 
 /**
@@ -531,6 +531,49 @@
   #endif
 #endif // PIDTEMP
 
+
+/**
+ * Model Predictive Control for hotend
+ *
+ * Use a physical model of the hotend to control temperature. When configured correctly
+ * this gives better responsiveness and stability than PID and it also removes the need
+ * for PID_EXTRUSION_SCALING and PID_FAN_SCALING. Use M306 T to autotune the model.
+ */
+  //#define MPCTEMP
+#if ENABLED(MPCTEMP)
+  #define MPC_EDIT_MENU                             // Add MPC editing to the "Advanced Settings" menu. (~1300 bytes of flash)
+  #define MPC_AUTOTUNE_MENU                         // Add MPC auto-tuning to the "Advanced Settings" menu. (~350 bytes of flash)
+
+  #define MPC_MAX BANG_MAX                            // (0..255) Current to nozzle while MPC is active.
+  #define MPC_HEATER_POWER { 40.0f }                  // (W) Heat cartridge powers.
+
+  #define MPC_INCLUDE_FAN                             // Model the fan speed?
+
+  // Measured physical constants from M306
+  #define MPC_BLOCK_HEAT_CAPACITY { 10.41f }           // (J/K) Heat block heat capacities.
+  #define MPC_SENSOR_RESPONSIVENESS { 0.2161f }         // (K/s per ∆K) Rate of change of sensor temperature from heat block.
+  #define MPC_AMBIENT_XFER_COEFF { 0.0425f }           // (W/K) Heat transfer coefficients from heat block to room air with fan off.
+  #if ENABLED(MPC_INCLUDE_FAN)
+    #define MPC_AMBIENT_XFER_COEFF_FAN255 { 0.1204f }  // (W/K) Heat transfer coefficients from heat block to room air with fan on full.
+  #endif
+
+  // For one fan and multiple hotends MPC needs to know how to apply the fan cooling effect.
+  #if ENABLED(MPC_INCLUDE_FAN)
+    //#define MPC_FAN_0_ALL_HOTENDS
+    //#define MPC_FAN_0_ACTIVE_HOTEND
+  #endif
+
+  #define FILAMENT_HEAT_CAPACITY_PERMM { 5.6e-3f }    // 0.0056 J/K/mm for 1.75mm PLA (0.0149 J/K/mm for 2.85mm PLA).
+  //#define FILAMENT_HEAT_CAPACITY_PERMM { 3.6e-3f }  // 0.0036 J/K/mm for 1.75mm PETG (0.0094 J/K/mm for 2.85mm PETG).
+
+  // Advanced options
+  #define MPC_SMOOTHING_FACTOR 0.5f                   // (0.0...1.0) Noisy temperature sensors may need a lower value for stabilization.
+  #define MPC_MIN_AMBIENT_CHANGE 1.0f                 // (K/s) Modeled ambient temperature rate of change, when correcting model inaccuracies.
+  #define MPC_STEADYSTATE 0.5f                        // (K/s) Temperature change rate for steady state logic to be enforced.
+
+  #define MPC_TUNING_POS { X_CENTER, Y_CENTER, 1.0f } // (mm) M306 Autotuning position, ideally bed center at first layer height.
+  #define MPC_TUNING_END_Z 10.0f                      // (mm) M306 Autotuning final Z position.
+#endif   
 //===========================================================================
 //====================== PID > Bed Temperature Control ======================
 //===========================================================================
@@ -548,7 +591,7 @@
  * heater. If your configuration is significantly different than this and you don't understand
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
-#define PIDTEMPBED
+//#define PIDTEMPBED
 
 //#define BED_LIMIT_SWITCHING
 
@@ -635,7 +678,7 @@
  * *** IT IS HIGHLY RECOMMENDED TO LEAVE THIS OPTION ENABLED! ***
  */
 #define PREVENT_COLD_EXTRUSION
-#define EXTRUDE_MINTEMP 170
+#define EXTRUDE_MINTEMP 180
 
 /**
  * Prevent a single extrusion longer than EXTRUDE_MAXLENGTH.
@@ -850,7 +893,7 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
+#define DEFAULT_RETRACT_ACCELERATION  2000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
@@ -861,7 +904,7 @@
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
-#define CLASSIC_JERK
+//#define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
   #define DEFAULT_XJERK 10.0
   #define DEFAULT_YJERK 10.0
@@ -885,7 +928,7 @@
  *   https://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.013 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.2 // (mm) Distance from real junction edge
   #define JD_HANDLE_SMALL_SEGMENTS    // Use curvature estimation instead of just the junction angle
                                       // for small segments (< 1mm) with large junction angles (> 135°).
 #endif
@@ -898,7 +941,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
-//#define S_CURVE_ACCELERATION
+#define S_CURVE_ACCELERATION
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -1063,7 +1106,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { 45, 45, -1.3 }
+#define NOZZLE_TO_PROBE_OFFSET { 45, 45, -0.9 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1143,7 +1186,7 @@
 #define Z_PROBE_OFFSET_RANGE_MAX 20
 
 // Enable the M48 repeatability test to test probe accuracy
-#define Z_MIN_PROBE_REPEATABILITY_TEST
+//#define Z_MIN_PROBE_REPEATABILITY_TEST
 
 // Before deploy/stow pause for user confirmation
 //#define PAUSE_BEFORE_DEPLOY_STOW
@@ -1168,10 +1211,10 @@
 //#define DELAY_BEFORE_PROBING 200  // (ms) To prevent vibrations from triggering piezo sensors
 
 // Require minimum nozzle and/or bed temperature for probing
-//#define PREHEAT_BEFORE_PROBING
+#define PREHEAT_BEFORE_PROBING
 #if ENABLED(PREHEAT_BEFORE_PROBING)
   #define PROBING_NOZZLE_TEMP 120   // (°C) Only applies to E0 at this time
-  #define PROBING_BED_TEMP     50
+  #define PROBING_BED_TEMP    40
 #endif
 
 // For Inverting Stepper Enable Pins (Active Low) use 0, Non Inverting (Active High) use 1
@@ -1229,7 +1272,7 @@
 //#define Z_HOMING_HEIGHT  4      // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                   // Be sure to have this much clearance over your Z_MAX_POS to prevent grinding.
 
-//#define Z_AFTER_HOMING  10      // (mm) Height to move to after homing Z
+#define Z_AFTER_HOMING  10      // (mm) Height to move to after homing Z
 
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
@@ -1250,6 +1293,7 @@
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
 #define Z_MAX_POS 170
+#define Z_SAFE_MAX_POS	165						  
 
 /**
  * Software Endstops
@@ -1411,10 +1455,10 @@
 /**
  * Auto-leveling needs preheating
  */
-#define PREHEAT_BEFORE_LEVELING
+//#define PREHEAT_BEFORE_LEVELING
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
   #define LEVELING_NOZZLE_TEMP 120   // (°C) Only applies to E0 at this time
-  #define LEVELING_BED_TEMP     50
+  #define LEVELING_BED_TEMP     40
 #endif
 
 /**
@@ -1435,7 +1479,7 @@
   // The height can be set with M420 Z<height>
   #define ENABLE_LEVELING_FADE_HEIGHT
   #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
-    #define DEFAULT_LEVELING_FADE_HEIGHT 10.0 // (mm) Default fade height.
+    #define DEFAULT_LEVELING_FADE_HEIGHT 0 // (mm) Default fade height.
   #endif
 
   // For Cartesian machines, instead of dividing moves on mesh boundaries,
@@ -1451,11 +1495,11 @@
   #if ENABLED(G26_MESH_VALIDATION)
     #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
     #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for G26.
-    #define MESH_TEST_HOTEND_TEMP  205    // (°C) Default nozzle temperature for G26.
+    #define MESH_TEST_HOTEND_TEMP  195    // (°C) Default nozzle temperature for G26.
     #define MESH_TEST_BED_TEMP      60    // (°C) Default bed temperature for G26.
     #define G26_XY_FEEDRATE         20    // (mm/s) Feedrate for G26 XY moves.
     #define G26_XY_FEEDRATE_TRAVEL 100    // (mm/s) Feedrate for G26 XY travel moves.
-    #define G26_RETRACT_MULTIPLIER   1.0  // G26 Q (retraction) used by default between mesh test elements.
+    #define G26_RETRACT_MULTIPLIER   2.0  // G26 Q (retraction) used by default between mesh test elements.
   #endif
 
 #endif
@@ -1496,7 +1540,7 @@
   #define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET 15             // Set Mesh bounds as an inset region of the bed
-  #define GRID_MAX_POINTS_X 3     // Don't use more than 15 points per axis, implementation limited.
+  #define GRID_MAX_POINTS_X 10     // Don't use more than 15 points per axis, implementation limited.
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   //#define UBL_HILBERT_CURVE       // Use Hilbert distribution for less travel when probing multiple points
@@ -1507,7 +1551,7 @@
   //#define UBL_Z_RAISE_WHEN_OFF_MESH 2.5 // When the nozzle is off the mesh, this value is used
                                           // as the Z-Height correction value.
 
-  #define UBL_MESH_WIZARD         // Run several commands in a row to get a complete mesh
+  //#define UBL_MESH_WIZARD         // Run several commands in a row to get a complete mesh
 
 #elif ENABLED(MESH_BED_LEVELING)
 
@@ -1527,7 +1571,8 @@
  * Add a bed leveling sub-menu for ABL or MBL.
  * Include a guided procedure if manual probing is enabled.
  */
-//#define LCD_BED_LEVELING
+
+#define LCD_BED_LEVELING
 
 #if ENABLED(LCD_BED_LEVELING)
   #define MESH_EDIT_Z_STEP  0.025 // (mm) Step size while manually probing Z axis.
@@ -1536,18 +1581,18 @@
 #endif
 
 // Add a menu item to move between bed corners for manual bed adjustment
-//#define LEVEL_BED_CORNERS
+#define LCD_BED_TRAMMING
 
-#if ENABLED(LEVEL_BED_CORNERS)
-  #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
-  #define LEVEL_CORNERS_HEIGHT      0.0   // (mm) Z height of nozzle at leveling points
-  #define LEVEL_CORNERS_Z_HOP       4.0   // (mm) Z height of nozzle between leveling points
-  //#define LEVEL_CENTER_TOO              // Move to the center after the last corner
-  //#define LEVEL_CORNERS_USE_PROBE
-  #if ENABLED(LEVEL_CORNERS_USE_PROBE)
-    #define LEVEL_CORNERS_PROBE_TOLERANCE 0.1
-    #define LEVEL_CORNERS_VERIFY_RAISED   // After adjustment triggers the probe, re-probe to verify
-    //#define LEVEL_CORNERS_AUDIO_FEEDBACK
+#if ENABLED(LCD_BED_TRAMMING)
+  #define BED_TRAMMING_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
+  #define BED_TRAMMING_HEIGHT      0.0        // (mm) Z height of nozzle at leveling points
+  #define BED_TRAMMING_Z_HOP       4.0        // (mm) Z height of nozzle between leveling points
+  #define BED_TRAMMING_INCLUDE_CENTER       // Move to the center after the last corner
+  //#define BED_TRAMMING_USE_PROBE
+  #if ENABLED(BED_TRAMMING_USE_PROBE)
+    #define BED_TRAMMING_PROBE_TOLERANCE 0.1  // (mm)
+    #define BED_TRAMMING_VERIFY_RAISED        // After adjustment triggers the probe, re-probe to verify
+    //#define BED_TRAMMING_AUDIO_FEEDBACK
   #endif
 
   /**
@@ -1567,18 +1612,18 @@
    *  |  1       2  |   | 1         4 |    | 1         2 |   | 2           |
    *  LF --------- RF   LF --------- RF    LF --------- RF   LF --------- RF
    */
-  #define LEVEL_CORNERS_LEVELING_ORDER { LF, RF, RB, LB }
+  #define LEVEL_CORNERS_LEVELING_ORDER { LF,RB,LB,RF }
 #endif
 
 /**
  * Commands to execute at the end of G29 probing.
  * Useful to retract or move the Z probe out of the way.
  */
-//#define Z_PROBE_END_SCRIPT "G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
+#define Z_PROBE_END_SCRIPT "G1 Z15 X200 Y150 F7200"
 
 // @section homing
 
-// The center of the bed is at (X=0, Y=0)
+// The center of the bed is at (X=100, Y=75)
 //#define BED_CENTER_AT_0_0
 
 // Manually set the home position. Leave these undefined for automatic settings.
@@ -1682,7 +1727,7 @@
  *   M502 - Revert settings to "factory" defaults. (Follow with M500 to init the EEPROM.)
  */
 #define EEPROM_SETTINGS     // Persistent storage with M500 and M501
-#define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
+//#define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
 #define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
 #define EEPROM_BOOT_SILENT    // Keep M503 quiet and only give errors during first load
 #if ENABLED(EEPROM_SETTINGS)
@@ -1696,7 +1741,7 @@
 // every couple of seconds when it can't accept commands.
 //
 #define HOST_KEEPALIVE_FEATURE        // Disable this if your host doesn't like keepalive messages
-#define DEFAULT_KEEPALIVE_INTERVAL 2  // Number of seconds between "busy" messages. Set with M113.
+#define DEFAULT_KEEPALIVE_INTERVAL 10  // Number of seconds between "busy" messages. Set with M113.
 #define BUSY_WHILE_HEATING            // Some hosts require "busy" messages even during heating
 
 //
@@ -1715,16 +1760,22 @@
 // Preheat Constants - Up to 5 are supported without changes
 //
 #define PREHEAT_1_LABEL       "PLA"
-#define PREHEAT_1_TEMP_HOTEND 180
-#define PREHEAT_1_TEMP_BED     70
-#define PREHEAT_1_TEMP_CHAMBER 35
+#define PREHEAT_1_TEMP_HOTEND 190
+#define PREHEAT_1_TEMP_BED     60
+#define PREHEAT_1_TEMP_CHAMBER 0
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL       "ABS"
-#define PREHEAT_2_TEMP_HOTEND 240
-#define PREHEAT_2_TEMP_BED    110
-#define PREHEAT_2_TEMP_CHAMBER 35
+#define PREHEAT_2_TEMP_HOTEND 255
+#define PREHEAT_2_TEMP_BED    100
+#define PREHEAT_2_TEMP_CHAMBER 0
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
+
+#define PREHEAT_3_LABEL       "PETG"
+#define PREHEAT_3_TEMP_HOTEND 240
+#define PREHEAT_3_TEMP_BED    90
+#define PREHEAT_3_TEMP_CHAMBER 0
+#define PREHEAT_3_FAN_SPEED     0 // Value from 0 to 255
 
 /**
  * Nozzle Park
@@ -1741,7 +1792,7 @@
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z_raise }
-  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
+  #define NOZZLE_PARK_POINT { 180, 145, 20 }
   //#define NOZZLE_PARK_X_ONLY          // X move only is required to park
   //#define NOZZLE_PARK_Y_ONLY          // Y move only is required to park
   #define NOZZLE_PARK_Z_RAISE_MIN   2   // (mm) Always raise Z by at least this distance
@@ -1975,7 +2026,7 @@
 // Use this option to override the number of step signals required to
 // move between next/prev menu items.
 //
-//#define ENCODER_STEPS_PER_MENU_ITEM 1
+#define ENCODER_STEPS_PER_MENU_ITEM 1
 
 /**
  * Encoder Direction Options
@@ -2032,7 +2083,7 @@
 // Note: Test audio output with the G-Code:
 //  M300 S<frequency Hz> P<duration ms>
 //
-#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 2
+#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 5
 #define LCD_FEEDBACK_FREQUENCY_HZ 5000
 
 //=============================================================================
